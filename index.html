@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIM Algorithm: Password Metrics Panel</title>
+    <style>
+        /* Modern UI Clean Styling Sheet */
+        :root {
+            --bg-color: #f4f6f9;
+            --panel-bg: #ffffff;
+            --text-main: #2d3748;
+            --border-val: #e2e8f0;
+            --primary: #4a5568;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--panel-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #1a202c;
+            border-bottom: 2px solid var(--border-val);
+            padding-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .lab-meta {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 2px solid var(--border-val);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #3182ce;
+        }
+
+        .report-panel {
+            background: #f8fafc;
+            border: 1px solid var(--border-val);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .report-title {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+            color: #4a5568;
+        }
+
+        .metric-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border-val);
+        }
+
+        .metric-line:last-child {
+            border-bottom: none;
+        }
+
+        .label-tag {
+            color: #4a5568;
+        }
+
+        .value-tag {
+            font-family: "Courier New", Courier, monospace;
+            font-weight: bold;
+        }
+
+        .matrix-badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        /* Dynamic Status Colors */
+        .tier-invalid { background-color: #a0aec0; }
+        .tier-weak { background-color: #e53e3e; }
+        .tier-medium { background-color: #dd6b20; }
+        .tier-strong { background-color: #38a169; }
+        .tier-excellent { background-color: #3182ce; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2> PASSWORD COMPLEXITY ANALYZER</h2>
+    <div class="lab-meta">SYSTEM METRIC ASSESSMENT INTERFACE — DATE: 06-10-2026</div>
+
+    <!-- 1. INPUT PHASE -->
+    <div class="input-group">
+        <label for="passwordInput">Enter Password Target String:</label>
+        <input type="text" id="passwordInput" placeholder="Type password here to run real-time math models..." oninput="evaluateAIMAlgorithm()">
+    </div>
+
+    <!-- 3. MATRIX EVALUATION REPORT OUTPUT DISPLAY PANEL -->
+    <div class="report-panel">
+        <div class="report-title">====== METRIC ANALYSIS REPORT ======</div>
+        
+        <div class="metric-line">
+            <span class="label-tag">Total Character Length (L):</span>
+            <span class="value-tag" id="lblLength">0</span>
+        </div>
+        <div class="metric-line">
+            <span class="label-tag">Active Pool Space (N):</span>
+            <span class="value-tag" id="lblPool">0 possible options</span>
+        </div>
+        <div class="metric-line">
+            <span class="label-tag">Calculated Shannon Entropy:</span>
+            <span class="value-tag" id="lblEntropy">0.00 bits</span>
+        </div>
+        <div class="metric-line">
+            <span class="label-tag">Security Matrix Rating:</span>
+            <span><span id="lblTier" class="matrix-badge tier-invalid">None</span></span>
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     * 2. ANALYSIS PHASE & RUNTIME PIPELINE
+     * Mirroring the core operational metrics directly inside the client engine.
+     */
+    function evaluateAIMAlgorithm() {
+        const password = document.getElementById("passwordInput").value;
+        const length = password.length;
+
+        // Base case validation handler
+        if (length === 0) {
+            updateUI(0, 0, 0, "None", "tier-invalid");
+            return;
+        }
+
+        // Substring character-class validation tracking arrays
+        const hasLower = /[a-z]/.test(password);
+        const hasUpper = /[A-Z]/.test(password);
+        const hasDigit = /[0-9]/.test(password);
+        // Matches standard symbols and punctuation points
+        const hasSpecial = /[\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password);
+
+        // Map dimensions dynamically based on matching groups
+        let poolSize = 0;
+        if (hasLower)   poolSize += 26;
+        if (hasUpper)   poolSize += 26;
+        if (hasDigit)   poolSize += 10;
+        if (hasSpecial) poolSize += 32;
+
+        if (poolSize === 0) poolSize = 10; // Structural baseline safety fallback
+
+        // Core Mathematical Equation Processing: E = L * log2(N)
+        // JavaScript math conversion equivalent to Python's math.log2()
+        const entropy = length * (Math.log(poolSize) / Math.log(2));
+
+        // Threshold Matrix Routing Boundaries Evaluation
+        let tierLabel = "";
+        let tierClass = "";
+
+        if (entropy < 40) {
+            tierLabel = "Weak ";
+            tierClass = "tier-weak";
+        } else if (entropy < 60) {
+            tierLabel = "Medium ";
+            tierClass = "tier-medium";
+        } else if (entropy < 80) {
+            tierLabel = "Strong ";
+            tierClass = "tier-strong";
+        } else {
+            tierLabel = "Excellent / Very Strong ";
+            tierClass = "tier-excellent";
+        }
+
+        // Push computed information states straight to display DOM
+        updateUI(length, poolSize, entropy, tierLabel, tierClass);
+    }
+
+    function updateUI(length, pool, entropy, label, className) {
+        document.getElementById("lblLength").innerText = length;
+        document.getElementById("lblPool").innerText = pool + " characters";
+        document.getElementById("lblEntropy").innerText = entropy.toFixed(2) + " bits";
+        
+        const tierBadge = document.getElementById("lblTier");
+        tierBadge.innerText = label;
+        tierBadge.className = "matrix-badge " + className;
+    }
+</script>
+
+</body>
+</html>
